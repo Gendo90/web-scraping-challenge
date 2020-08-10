@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup as bs
 from splinter import Browser
 import time
+import pandas as pd
 
 def scrape():
     return None
@@ -53,5 +54,24 @@ def scrape_featured_mars_image():
 
     img_src = img_soup.find("img", class_="main_image")["src"]
     img_src = base_url + img_src
+
+    browser.quit()
+
     return {"featured_image": img_src}
+
+# scrape Mars data table info directly from space-facts.com/mars
+def scrape_data_table():
+    data_table_url = "https://space-facts.com/mars/"
+    tables = pd.read_html(data_table_url)
+    mars_info_df = tables[0]
+    mars_info_df = mars_info_df.set_index(0)
+    mars_info_df.index.name = "Mars"
+    mars_info_df.columns = [""]
+    mars_info_df
+    #html_mars_table = mars_info_df.to_html()
+    #return
+    output_dict = mars_info_df.to_dict()
+
+    return output_dict
+
 
