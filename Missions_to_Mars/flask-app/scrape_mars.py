@@ -75,3 +75,32 @@ def scrape_data_table():
     return output_dict
 
 
+# scrape high-quality pictures for each Martian hemisphere
+# returns a dictionary of hemisphere name to file location
+def scrape_hemisphere_enhanced_images():
+    executable_path = {'executable_path': 'chromedriver.exe'}
+    browser = Browser('chrome', **executable_path, headless=False)
+
+    base_url = "https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars"
+
+
+    all_hemispheres = []
+
+    browser.visit(base_url)
+    num_hemispheres = len(browser.find_by_css(".thumb"))
+
+    for hemisphere_num in range(num_hemispheres):
+        curr_title = browser.find_by_tag(
+            "h3")[hemisphere_num].html.replace(" Enhanced", "")
+        browser.find_by_css(".thumb")[hemisphere_num].click()
+        curr_img_url = browser.find_by_text("Sample").first["href"]
+        # print(curr_img_url)
+        browser.back()
+
+        all_hemispheres.append({"title": curr_title, "img_url": curr_img_url})
+
+    browser.windows[0].close_others()
+    # print(all_hemispheres)
+    browser.quit()
+
+    return all_hemispheres
