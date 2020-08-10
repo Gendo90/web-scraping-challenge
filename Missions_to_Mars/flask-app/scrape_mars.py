@@ -3,8 +3,31 @@ from splinter import Browser
 import time
 import pandas as pd
 
+
+# full "scrape" function, comprised of the four subfunctions
+# defined below
 def scrape():
-    return None
+    # create the overall dictionary to hold all the results
+    # which will be returned by this function to the flask app
+    results = {}
+
+    # first, scrape and then add the article info
+    article_info = scrape_article_info():
+    results.update(article_info)
+
+    # scrape and then add the featured mars image
+    featured_image = scrape_featured_mars_image()
+    results.update(featured_image)
+
+    # scrape and then add the Mars data table
+    Martian_data_table = scrape_data_table()
+    results.update(Martian_data_table)
+
+    # scrape and then add the hemisphere images
+    hemisphere_images = scrape_hemisphere_enhanced_images()
+    results.update(hemisphere_images)
+
+    return results
 
 # first scraped info for the Mars app, article headline and summary
 # from the NASA website, returned as a dictionary
