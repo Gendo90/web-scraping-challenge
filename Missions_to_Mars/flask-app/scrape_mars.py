@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup as bs
 from splinter import Browser
 import time
 import pandas as pd
+import lxml
 
 
 # full "scrape" function, comprised of the four subfunctions
@@ -12,21 +13,26 @@ def scrape():
     results = {}
 
     # first, scrape and then add the article info
-    article_info = scrape_article_info():
+    article_info = scrape_article_info()
     results.update(article_info)
+    print("Article Info Scraped!")
 
     # scrape and then add the featured mars image
     featured_image = scrape_featured_mars_image()
     results.update(featured_image)
+    print("Featured Image Scraped!")
 
     # scrape and then add the Mars data table
     Martian_data_table = scrape_data_table()
     results.update(Martian_data_table)
+    print("Martian Data Table Scraped!")
 
     # scrape and then add the hemisphere images
     hemisphere_images = scrape_hemisphere_enhanced_images()
-    results.update(hemisphere_images)
+    results.update({"Hemispheres":hemisphere_images})
+    print("Hemisphere Images Scraped!")
 
+    print(results)
     return results
 
 # first scraped info for the Mars app, article headline and summary
@@ -68,12 +74,12 @@ def scrape_featured_mars_image():
     browser.execute_script(
         "document.getElementById('fancybox-lock').scrollTo(0, document.body.scrollHeight);")
 
-    browser.click_link_by_partial_text("more info")
+    browser.links.find_by_partial_text("more info").click()
 
     time.sleep(1)
 
     #get image src
-    img_soup = bs(browser2.html, "html.parser")
+    img_soup = bs(browser.html, "html.parser")
 
     img_src = img_soup.find("img", class_="main_image")["src"]
     img_src = base_url + img_src
@@ -89,7 +95,7 @@ def scrape_data_table():
     mars_info_df = tables[0]
     mars_info_df = mars_info_df.set_index(0)
     mars_info_df.index.name = "Mars"
-    mars_info_df.columns = [""]
+    mars_info_df.columns = ["Data Table"]
     mars_info_df
     #html_mars_table = mars_info_df.to_html()
     #return
@@ -102,7 +108,7 @@ def scrape_data_table():
 # returns a dictionary of hemisphere name to file location
 def scrape_hemisphere_enhanced_images():
     executable_path = {'executable_path': 'chromedriver.exe'}
-    browser = Browser('chrome', **executable_path, headless=False)
+    browser = Browser('chrome', **executable_path, headless=True)
 
     base_url = "https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars"
 
