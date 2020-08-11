@@ -44,6 +44,9 @@ def scrape_article_info():
     browser = Browser('chrome', **executable_path, headless=True)
 
     browser.visit(url)
+    
+    #add a delay so page fully loads
+    time.sleep(1)
 
     mars_news = browser.html
 
